@@ -1,0 +1,40 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+	}
+	dependencies {
+		classpath 'org.xtext:xtext-gradle-plugin:3.0.2'
+	}
+}
+
+subprojects {
+	ext.xtextVersion = '2.30.0'
+	repositories {
+		mavenCentral()
+	}
+
+	apply plugin: 'java-library'
+	dependencies {
+		api platform("org.eclipse.xtext:xtext-dev-bom:${xtextVersion}")
+
+		implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+		implementation 'com.google.code.gson:gson:2.10.1'
+		compileOnly 'org.projectlombok:lombok:1.18.28'
+    	annotationProcessor 'org.projectlombok:lombok:1.18.28'
+	}
+
+	apply plugin: 'org.xtext.xtend'
+	apply from: "${rootDir}/gradle/source-layout.gradle"
+	apply plugin: 'eclipse'
+
+	group = 'org.zhaw.husmaret.mt.blocklab'
+	version = '1.0.0-SNAPSHOT'
+
+	sourceCompatibility = '17'
+	targetCompatibility = '17'
+
+	configurations.all {
+		exclude group: 'asm'
+	}
+}

@@ -1,0 +1,3 @@
+include 'org.zhaw.husmaret.mt.blocklab'
+include 'org.zhaw.husmaret.mt.blocklab.ide'
+include 'org.zhaw.husmaret.mt.blocklab.web'

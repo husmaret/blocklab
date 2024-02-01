@@ -1,0 +1,265 @@
+grammar org.zhaw.husmaret.mt.BlockLab with org.eclipse.xtext.common.Terminals
+
+generate blocklab "http://www.zhaw.org/husmaret/mt/BlockLab"
+
+Contract:
+	'Version' ':' version=('1.0')
+	'Ecosystem' ':' ecosystem=('Ethereum'|'Solana'|'Cardano') 
+	('Participants' ':' participants+=ParticipantDeclaration*)?
+	('Assets' ':' asset=Assets)?
+	'Contract' 
+	('(' params+=ParameterDeclaration (',' params+=ParameterDeclaration)* ')')?
+	':'
+	workflow=When
+;
+
+ParticipantDeclaration:
+	ParticipantDeclarationWithAddress | ParticipantDeclarationWithContractParam
+;
+ 
+ParticipantDeclarationWithAddress:
+	name=ID '(' address=STRING (',' role=STRING)? ')' 
+;
+
+ParticipantDeclarationWithContractParam:
+	name=ID '(' contractParam=ContractParameter (',' role=STRING)? ')' 
+;
+
+Assets:
+	accountBalances=AccountBalancesValue? & props+=PropertyDeclaration*
+; 
+
+AccountBalancesValue:
+	value=ACCOUNTBALANCES
+;
+	
+PropertyDeclaration:
+	type=ValueType name=ID ('=' defaultValue=ValueLiteral)?
+;	
+
+ParameterDeclaration:
+	type=ValueType name=ID
+;	
+	
+ValueType:
+	('Text'|'Number'|'Date'|'Participant'|'Boolean')
+;	
+
+WhenOrFinish:
+	When | FinishStatement
+;
+
+WhenOrStatement:
+	When | Statement
+;
+ 
+Statement:
+	DepositStatement | WithdrawStatement | TransferStatement | SetPropertyStatement | IfStatement | IfElseStatement | FinishStatement
+;
+
+When:
+	'When' '[' 
+		(transactions+=Transaction)+
+	']'
+	'After' after=DateExpression
+	'Continue' ':' continueAs=WhenOrFinish
+; 
+
+DepositStatement:
+	'Deposit' currency=Currency amount=Term 'into account' participant=ParticipantExpression
+;
+
+WithdrawStatement:
+	'Withdraw ' currency=Currency amount=Term 'from account' participant=ParticipantExpression
+;
+
+TransferStatement:
+	'Transfer' currency=Currency amount=Term 'sender' fromParticipant=ParticipantExpression  'receiver' toParticipant=ParticipantExpression
+;
+
+SetPropertyStatement:
+	'Set' property=Property 'to' value=Term
+;
+
+IfStatement:
+	'If' '(' observation=Condition ')' 'then' (statements+=Statement)+ 'EndIf'
+;
+
+IfElseStatement:
+	'IfElse' '(' observation=Condition ')' 'then' (statements+=Statement)+ 'else' (elseStatements+=Statement)+ 'EndIfElse'
+;
+
+FinishStatement:
+	finish=FINISH
+;
+
+Access:
+	ParticipantOrAccess | AnyoneValue | AnyoneRoleValue
+;
+
+ParticipantOrAccess:
+	ParticipantRef | ParticipantRole | CreatorValue
+;
+
+ParticipantRef:
+	'Participant' '(' participant=[ParticipantDeclaration] ')'
+;
+
+ParticipantRole:
+	'Role' '(' role=STRING ')'
+;
+
+Transaction:
+	'Transaction' name=ID
+	('(' params+=ParameterDeclaration (',' params+=ParameterDeclaration)* ')')?
+	'[' 
+		('Once' onlyOnce=BOOLEAN)?
+		'Allowed' allowed=Access
+		'Condition' condition=Condition
+		'Statements' ':' (statements+=WhenOrStatement)+
+	']'
+;
+
+Condition:
+	Term | AlwaysValue
+;
+
+Expression:
+	OrExpr;
+
+OrExpr returns Expression:
+	AndExpr ({OrExpr.left=current} ('OR' | 'or' | '||') right=AndExpr)*;
+
+AndExpr returns Expression:
+	NotExpr ({AndExpr.left=current} ('AND' | 'and' | '&&') right=NotExpr)*;
+	
+NotExpr returns Expression:
+	{NotExpr} ('NOT' | 'not' | '!') expr=CompareExpr | CompareExpr;
+
+CompareExpr returns Expression:
+	MathExpr ({CompareExpr.left=current} operator=('>=' | '<=' | 'equals' | 'not equals' | '>' | '<') right=MathExpr)*;
+
+MathExpr returns Expression:
+	Term ({MathExpr.left=current} operator=('+' | '-' | '*' | '/' | '%') right=Term)*;
+	
+Term returns Expression:
+	'(' Expression ')'
+	| NumberValue | Date | BooleanValue | ContractParameter | Property | TransactionValueValue | TransactionParameter | TransactionCallerValue 
+;
+	
+Date:
+	'cal' '(' year=INT '-' month=INT '-' day=INT (hour=INT ':' minute=INT)? ')'
+;
+
+DurationFromStart:
+	'start' 'plus' amount=INT duration=Duration
+;
+
+Duration:
+	('minutes'|'hours'|'days'|'weeks'|'months'|'years')
+;
+
+Currency:
+	('ETH'|'SOL'|'ADA')
+;
+
+TransactionValueValue:
+	value=TRANSACTIONVALUE
+;
+
+ValueLiteral:
+	ContractParameter | StringValue | NumberValue | Date | BooleanValue | ParticipantRef
+;
+
+DateExpression:
+	ContractParameter | Date | DurationFromStart
+;
+
+ParticipantExpression:
+	ParticipantOrAccess | TransactionCallerValue | ContractParameter | Property
+;
+
+ContractParameter:
+	'ContractParam' '(' contractParam=[ParameterDeclaration] ')'
+;
+
+TransactionParameter:
+	'TransactionParam' '(' transactionParam=[ParameterDeclaration] ')' 'of' transactionId=[Transaction]
+;
+
+Property:
+	'Property' '(' propertyName=[PropertyDeclaration] ')'
+;
+
+NumberValue:
+	value=INT
+;
+
+StringValue:
+	value=STRING
+;
+
+BooleanValue:
+	value=BOOLEAN
+;
+
+AnyoneValue:
+	value=ANYONE
+;
+
+AnyoneRoleValue:
+	ANYONE '(' role=STRING ')'
+;
+
+CreatorValue:
+	value=CREATOR
+;
+
+TransactionCallerValue:
+	value=TRANSACTIONCALLER
+;
+
+AlwaysValue:
+	value=ALWAYS
+;
+
+terminal FINISH:
+	'Finish'
+;
+
+terminal BOOLEAN:
+	'true'|'false'
+;
+
+terminal ACCOUNTBALANCES:
+	'AccountBalances'
+;
+
+terminal ANYONE:
+	'Anyone'
+;
+
+terminal CREATOR:
+	'Creator'
+;
+
+terminal TRANSACTIONCALLER:
+	'TransactionCaller'
+;
+
+terminal ALWAYS:
+	'Always'
+;
+
+terminal NOW:
+	'Now'
+;
+
+terminal CONTRACTSTART:
+	'ContractStart'
+;
+
+terminal TRANSACTIONVALUE:
+	'TransactionValue'
+;
+

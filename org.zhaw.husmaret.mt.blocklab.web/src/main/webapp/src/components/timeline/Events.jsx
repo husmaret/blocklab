@@ -1,0 +1,63 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import TimelineDot from './TimelineDot';
+
+/**
+ * The markup Information for all the events on the horizontal timeline.
+ *
+ * @param  {object} props The props from parent
+ * @return {StatelessFunctionalReactComponent} Markup Information for the fader
+ */
+const EventsBar = ({ events, selectedIndex, maxIndex, handleDateClick, labelWidth, theme }) => (
+  <ol
+    className='events-bar'
+    style={{
+      listStyle: 'none'
+    }}
+  >
+    {events.map((event, index) =>
+      <TimelineDot
+        distanceFromOrigin={event.distance}
+        tooltip={event.tooltip}
+        label={event.label}
+        date={event.date}
+        isTimeout={event.isTimeout}
+        index={index}
+        key={index}
+        onClick={handleDateClick}
+        selected={selectedIndex}
+        maxIndex={maxIndex}
+        labelWidth={labelWidth}
+        theme = {theme}
+      />
+    )}
+  </ol>
+);
+
+/**
+ * The styles that parent will provide
+ * @type {Object}
+ */
+EventsBar.propTypes = {
+  // Array containing the events
+  events: PropTypes.arrayOf(PropTypes.shape({
+    distance: PropTypes.number.isRequired,
+    label: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    isTimeout: PropTypes.bool
+  })).isRequired,
+  // The index of the selected event
+  selectedIndex: PropTypes.number,
+  // The max index of a selected event
+  maxIndex: PropTypes.number,
+  // a handler for clicks on a datapoint
+  handleDateClick: PropTypes.func,
+  // The width you want the labels to be
+  labelWidth: PropTypes.number.isRequired,
+  // the theme
+  theme: PropTypes.object.isRequired,
+}
+
+
+export default EventsBar;

@@ -1,0 +1,77 @@
+{
+  "name": "BlockLab IDE",
+  "description": "The IDE for the BlockLab DSL, a blockchain-independent Domain-Specific Language for Smart Contract Development.",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Reto Husmann",
+  "license": "Apache-2.0",
+  "homepage": "./",
+  "dependencies": {
+    "@blockly/field-date": "^8.0.2",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/base": "^5.0.0-alpha.87",
+    "@mui/icons-material": "^5.14.1",
+    "@mui/material": "^5.14.2",
+    "@mui/styles": "^5.14.11",
+    "@mui/system": "^5.14.1",
+    "@mui/x-date-pickers": "^6.10.2",
+    "@nivo/bar": "^0.83.0",
+    "@nivo/core": "^0.83.0",
+    "@nivo/line": "^0.83.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "ace-builds": "^1.27.0",
+    "axios": "^1.4.0",
+    "blockly": "^10.0.2",
+    "color": "^4.2.3",
+    "dayjs": "^1.11.9",
+    "jquery": "^3.7.1",
+    "prop-types": "^15.8.1",
+    "radium": "^0.26.2",
+    "react": "^18.2.0",
+    "react-ace": "^10.1.0",
+    "react-blockly": "^8.0.0",
+    "react-chrono": "^2.2.2",
+    "react-dimensions": "2.0.0-alpha2",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.45.2",
+    "react-motion": "^0.5.2",
+    "react-pro-sidebar": "^1.1.0-alpha.1",
+    "react-router-dom": "^6.14.2",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.15",
+    "@babel/core": "^7.22.20",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/preset-react": "^7.22.15",
+    "css-loader": "^6.8.1",
+    "react-scripts": "^5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
